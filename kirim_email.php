@@ -72,91 +72,120 @@ function sendEmail($to, $subject, $message) {
         return false;
     }
 }
-
-// Tampilkan tabel
-echo "<h2>Pemberitahuan Email Kedaluwarsa</h2>";
-echo "<table border='1' cellpadding='10' cellspacing='0'>";
-echo "<thead>
-        <tr>
-            <th>No</th>
-            <th>Keterangan</th>
-            <th>Tanggal/Waktu Email Terkirim</th>
-        </tr>
-      </thead>";
-echo "<tbody>";
-
-$no = 1;
-
-// Kirim email untuk dokumen yang akan kedaluwarsa
-if ($result_upcoming->num_rows > 0) {
-    while ($row = $result_upcoming->fetch_assoc()) {
-        $pemohon = isset($row['pemohon']) ? $row['pemohon'] : 'Tidak diketahui';
-        $nama_wilayah = isset($row['nama_wilayah']) ? $row['nama_wilayah'] : 'Tidak diketahui';
-        $nama_kategori = isset($row['nama_kategori']) ? $row['nama_kategori'] : 'Tidak diketahui';
-
-        $to = $row['pemohon_email'];
-        $subject = "Reminder: Dokumen Akan Kedaluwarsa";
-        $message = "
-            <p>Yth. {$pemohon},</p>
-            <p>Dokumen berikut akan kedaluwarsa dalam 7 hari:</p>
-            <ul>
-                <li><b>Kode Toko:</b> {$row['kode_toko']}</li>
-                <li><b>Nama Toko:</b> {$row['nama_toko']}</li>
-                <li><b>Wilayah:</b> {$nama_wilayah}</li>
-                <li><b>Item Izin:</b> {$nama_kategori}</li>
-                <li><b>Tanggal Berlaku Sampai:</b> {$row['tanggal_berlaku_sampai']}</li>
-            </ul>
-            <p>Segera lakukan perpanjangan dokumen jika diperlukan.</p>
-            <p>Salam,</p>
-            <p>Tim DMS Perizinan</p>
-        ";
-
-        if (sendEmail($to, $subject, $message)) {
-            echo "<tr>
-                    <td>{$no}</td>
-                    <td>Email reminder untuk dokumen yang akan kedaluwarsa dikirim ke {$to}</td>
-                    <td>" . date('Y-m-d H:i:s') . "</td>
-                  </tr>";
-            $no++;
-        }
-    }
-}
-
-// Kirim email untuk dokumen yang sudah kedaluwarsa
-if ($result_expired->num_rows > 0) {
-    while ($row = $result_expired->fetch_assoc()) {
-        $pemohon = isset($row['pemohon']) ? $row['pemohon'] : 'Tidak diketahui';
-        $nama_wilayah = isset($row['nama_wilayah']) ? $row['nama_wilayah'] : 'Tidak diketahui';
-        $nama_kategori = isset($row['nama_kategori']) ? $row['nama_kategori'] : 'Tidak diketahui';
-
-        $to = $row['pemohon_email'];
-        $subject = "Reminder: Dokumen Sudah Kedaluwarsa";
-        $message = "
-            <p>Yth. {$pemohon},</p>
-            <p>Dokumen berikut sudah kedaluwarsa:</p>
-            <ul>
-                <li><b>Kode Toko:</b> {$row['kode_toko']}</li>
-                <li><b>Nama Toko:</b> {$row['nama_toko']}</li>
-                <li><b>Wilayah:</b> {$nama_wilayah}</li>
-                <li><b>Item Izin:</b> {$nama_kategori}</li>
-                <li><b>Tanggal Berlaku Sampai:</b> {$row['tanggal_berlaku_sampai']}</li>
-            </ul>
-            <p>Segera lakukan perpanjangan dokumen jika diperlukan.</p>
-            <p>Salam,</p>
-            <p>Tim DMS Perizinan</p>
-        ";
-
-        if (sendEmail($to, $subject, $message)) {
-            echo "<tr>
-                    <td>{$no}</td>
-                    <td>Email reminder untuk dokumen yang sudah kedaluwarsa dikirim ke {$to}</td>
-                    <td>" . date('Y-m-d H:i:s') . "</td>
-                  </tr>";
-            $no++;
-        }
-    }
-}
-
-echo "</tbody>";
-echo "</table>";
 ?>
+
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <title>Pemberitahuan Email Kedaluwarsa</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Bootstrap & Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="assets/css/styles.css">
+</head>
+<body>
+    <?php include 'partials/header.php'; ?>
+    <div class="container-fluid">
+        <div class="row">
+            <?php include 'partials/sidebar.php'; ?>
+            <main class="col-12 col-md-9 ms-sm-auto col-lg-10 px-md-4 py-4">
+                <h2 class="mb-4">Pemberitahuan Email Kedaluwarsa</h2>
+                <div class="table-responsive">
+                    <table class="table table-bordered align-middle">
+                        <thead class="table-primary">
+                            <tr>
+                                <th>No</th>
+                                <th>Keterangan</th>
+                                <th>Tanggal/Waktu Email Terkirim</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        <?php
+                        $no = 1;
+                        // Kirim email untuk dokumen yang akan kedaluwarsa
+                        if ($result_upcoming->num_rows > 0) {
+                            while ($row = $result_upcoming->fetch_assoc()) {
+                                $pemohon = isset($row['pemohon']) ? $row['pemohon'] : 'Tidak diketahui';
+                                $nama_wilayah = isset($row['nama_wilayah']) ? $row['nama_wilayah'] : 'Tidak diketahui';
+                                $nama_kategori = isset($row['nama_kategori']) ? $row['nama_kategori'] : 'Tidak diketahui';
+
+                                $to = $row['pemohon_email'];
+                                $subject = "Reminder: Dokumen Akan Kedaluwarsa";
+                                $message = "
+                                    <p>Yth. {$pemohon},</p>
+                                    <p>Dokumen berikut akan kedaluwarsa dalam 7 hari:</p>
+                                    <ul>
+                                        <li><b>Kode Toko:</b> {$row['kode_toko']}</li>
+                                        <li><b>Nama Toko:</b> {$row['nama_toko']}</li>
+                                        <li><b>Wilayah:</b> {$nama_wilayah}</li>
+                                        <li><b>Item Izin:</b> {$nama_kategori}</li>
+                                        <li><b>Tanggal Berlaku Sampai:</b> {$row['tanggal_berlaku_sampai']}</li>
+                                    </ul>
+                                    <p>Segera lakukan perpanjangan dokumen jika diperlukan.</p>
+                                    <p>Salam,</p>
+                                    <p>Tim DMS Perizinan</p>
+                                ";
+
+                                if (sendEmail($to, $subject, $message)) {
+                                    echo "<tr>
+                                            <td>{$no}</td>
+                                            <td>Email reminder untuk dokumen yang akan kedaluwarsa dikirim ke {$to}</td>
+                                            <td>" . date('Y-m-d H:i:s') . "</td>
+                                          </tr>";
+                                    $no++;
+                                }
+                            }
+                        }
+
+                        // Kirim email untuk dokumen yang sudah kedaluwarsa
+                        if ($result_expired->num_rows > 0) {
+                            while ($row = $result_expired->fetch_assoc()) {
+                                $pemohon = isset($row['pemohon']) ? $row['pemohon'] : 'Tidak diketahui';
+                                $nama_wilayah = isset($row['nama_wilayah']) ? $row['nama_wilayah'] : 'Tidak diketahui';
+                                $nama_kategori = isset($row['nama_kategori']) ? $row['nama_kategori'] : 'Tidak diketahui';
+
+                                $to = $row['pemohon_email'];
+                                $subject = "Reminder: Dokumen Sudah Kedaluwarsa";
+                                $message = "
+                                    <p>Yth. {$pemohon},</p>
+                                    <p>Dokumen berikut sudah kedaluwarsa:</p>
+                                    <ul>
+                                        <li><b>Kode Toko:</b> {$row['kode_toko']}</li>
+                                        <li><b>Nama Toko:</b> {$row['nama_toko']}</li>
+                                        <li><b>Wilayah:</b> {$nama_wilayah}</li>
+                                        <li><b>Item Izin:</b> {$nama_kategori}</li>
+                                        <li><b>Tanggal Berlaku Sampai:</b> {$row['tanggal_berlaku_sampai']}</li>
+                                    </ul>
+                                    <p>Segera lakukan perpanjangan dokumen jika diperlukan.</p>
+                                    <p>Salam,</p>
+                                    <p>Tim DMS Perizinan</p>
+                                ";
+
+                                if (sendEmail($to, $subject, $message)) {
+                                    echo "<tr>
+                                            <td>{$no}</td>
+                                            <td>Email reminder untuk dokumen yang sudah kedaluwarsa dikirim ke {$to}</td>
+                                            <td>" . date('Y-m-d H:i:s') . "</td>
+                                          </tr>";
+                                    $no++;
+                                }
+                            }
+                        }
+                        ?>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="mt-4">
+                    <a href="dashboard.php" class="btn btn-primary">
+                        <i class="bi bi-arrow-left"></i> Kembali ke Dashboard
+                    </a>
+                </div>
+            </main>
+        </div>
+    </div>
+    <?php include 'partials/footer.php'; ?>
+</body>
+</html>
