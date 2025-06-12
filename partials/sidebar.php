@@ -33,6 +33,11 @@
                     <i class="bi bi-bar-chart"></i> Reports
                 </a>
             </li>
+            <li class="nav-item">
+                <a class="nav-link" href="import_dokumen.php">
+                    <i class="bi bi-file-earmark-arrow-up"></i> Import Dokumen
+                </a>
+            </li>
         </ul>
     </div>
 </nav>
